@@ -11,8 +11,8 @@ function App() {
       <BrowserRouter basename='VitalProfileClient'>
         <States>
           <Routes>
-            <Route path='/' element={<Home />} />
-            <Route path='/login' element={<Login />} />
+            <Route path='/' element={<Login />} />
+            <Route path='/login' element={<Home />} />
             <Route path='/signUp' element={<SignUp />} />
           </Routes>
         </States>
