@@ -16,5 +16,14 @@ const adminApi = axios.create({
     baseURL: import.meta.env.VITE_APP_AXIOS_ADMIN_BASE_URL
 })
 
+const userApi = axios.create({
+    baseURL: import.meta.env.VITE_APP_AXIOS_STUDENT_BASE_URL
+})
 
-export { api, adminApi, authApi, mailApi }
+const fileUploadApi = axios.create({
+    baseURL: import.meta.env.VITE_APP_AXIOS_FILEUPLOAD_BASE_URL
+})
+
+
+
+export { api, adminApi, authApi, mailApi,userApi,fileUploadApi }

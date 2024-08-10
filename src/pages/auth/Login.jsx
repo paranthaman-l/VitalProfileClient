@@ -5,9 +5,6 @@ import { useNavigate } from "react-router-dom";
 const Login = () => {
   const { login,loginFormError,loading, handleLogin, handleLoginFormChange } = useAuthStates();
   const navigate = useNavigate();
-  console.log(login);
-
-
   return (
     <div className="flex min-h-screen items-center justify-center">
       <form className={`flex flex-col min-h-52 justify-around`} onSubmit={loading ? (e)=>{e.preventDefault()} : handleLogin}>

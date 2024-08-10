@@ -18,7 +18,7 @@ const SignUp = () => {
           <input type="password" className={`border-[1px] p-2 outline-none rounded-sm text-xl ${(signUpFormError.isPasswordEmpty) && "border-red-600"}`} placeholder="Password" onChange={handleSignUpFormChange} value={signUp.password} name="password" id="password" />
         </div>
         <div className="">
-          <input type="password" className={`border-[1px] p-2 outline-none rounded-sm text-xl ${(signUpFormError.isPasswordEmpty) && "border-red-600"}`} placeholder="Password" onChange={handleSignUpFormChange} value={signUp.confirmPassword} name="confirmPassword" id="confirmPassword" />
+          <input type="password" className={`border-[1px] p-2 outline-none rounded-sm text-xl ${(signUpFormError.isPasswordEmpty) && "border-red-600"}`} placeholder="Confirm Password" onChange={handleSignUpFormChange} value={signUp.confirmPassword} name="confirmPassword" id="confirmPassword" />
         </div>
         <div className="flex justify-end">
           <p className="cursor-pointer" onClick={() => navigate("/login")}>Login...</p>

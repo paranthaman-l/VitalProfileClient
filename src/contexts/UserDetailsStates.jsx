@@ -6,8 +6,9 @@ import { createContext, useContext, useEffect, useState } from "react";
 import AdminService from "../services/AdminService";
 import { ErrorToast, SuccessToast } from "../components/Toast";
 import toast from "react-hot-toast";
-import { adminApi } from "../apis/axios";
+import { adminApi, userApi } from "../apis/axios";
 import { useNavigate } from "react-router-dom";
+import StudentService from "../services/StudentService";
 
 const UseUserDetailsContext = createContext();
 
@@ -18,10 +19,10 @@ export function UseUserDetailsProvider({ children }) {
         ErrorToast(error);
         setTimeout(() => {
             toast.remove();
-            SuccessToast("LogOut Success!");
             setTimeout(() => {
                 localStorage.clear();
                 adminApi.interceptors.request.clear();
+                userApi.interceptors.request.clear();
                 navigate("/login");
                 toast.remove();
             }, 1000);
@@ -36,6 +37,16 @@ export function UseUserDetailsProvider({ children }) {
         }
         if (localStorage.getItem('role') === "ADMIN") {
             AdminService.getUser().then((response) => {
+                const data = response.data;
+                localStorage.setItem('user', JSON.stringify(data));
+                setUser(data);
+            }).catch((e) => {
+                const error = e.response.data;
+                forceLogout("Token is Expired or Revoked");
+            })
+        }
+        else if (localStorage.getItem('role') === "STUDENT") {
+            StudentService.getUser().then((response) => {
                 const data = response.data;
                 localStorage.setItem('user', JSON.stringify(data));
                 setUser(data);

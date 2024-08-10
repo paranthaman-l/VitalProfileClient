@@ -1,14 +1,16 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
 import { Toaster } from "react-hot-toast"
-import { Outlet } from "react-router-dom"
+import { Outlet, useNavigate } from "react-router-dom"
 import AdminNavbar from '../components/admin/AdminNavbar'
 import { useEffect } from "react"
-import { adminApi } from "../apis/axios"
+import { userApi } from "../apis/axios"
 import { useUserDetailsStates } from "../contexts/UserDetailsStates"
-import AdminService from "../services/AdminService"
-const AdminLayout = () => {
+import StudentService from "../services/StudentService"
+import StudentNavbar from "../components/student/StudentNavbar"
+const StudentLayout = () => {
     const { setUserDetails, forceLogout } = useUserDetailsStates();
+    const navigate = useNavigate();
     useEffect(() => {
         const checkTokenValidity = async () => {
             const token = localStorage.getItem('token');
@@ -17,16 +19,15 @@ const AdminLayout = () => {
                 return;
             }
             else {
-                adminApi.interceptors.request.use((config) => {
+                userApi.interceptors.request.use((config) => {
                     config.headers.Authorization = "Bearer " + localStorage.getItem('token');
                     return config;
                 })
-                AdminService.checkToken().then((response) => {
-                    if(response.data)
+                StudentService.checkToken().then((response) => {
+                    if (response.data)
                         setUserDetails();
                     else
                         forceLogout("Token is Expired or Revoked")
-
                 }).catch((e) => {
                     const error = e.response.data;
                     forceLogout("Token is Expired or Revoked")
@@ -55,10 +56,10 @@ const AdminLayout = () => {
                 pauseOnHover
                 theme="colored"
             />
-            <AdminNavbar />
+            <StudentNavbar />
             <Outlet />
         </div>
     )
 }
 
-export default AdminLayout
+export default StudentLayout

@@ -5,7 +5,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import AuthService from '../services/AuthService'
 import { useNavigate } from 'react-router-dom'
-import { adminApi } from "../apis/axios";
+import { adminApi, userApi } from "../apis/axios";
 import { toast } from 'react-hot-toast'
 import { ErrorToast, SuccessToast } from "../components/Toast";
 import { useUserDetailsStates } from "./UserDetailsStates";
@@ -22,8 +22,8 @@ export function UseAuthProvider({ children }) {
     const [ip, setIp] = useState("");
 
     const [login, setLogin] = useState({ email: "", password: "" });
-    
-    const [signUp, setSignUp] = useState({username:"", email: "", password: "", confirmPassword: "" ,role:'student'});
+
+    const [signUp, setSignUp] = useState({ username: "", email: "", password: "", confirmPassword: "", role: 'student' });
     const [loginFormError, setLoginFormError] = useState({});
     const [signUpFormError, setSignUpFormError] = useState({});
 
@@ -41,10 +41,12 @@ export function UseAuthProvider({ children }) {
     const handleSignUpFormChange = (e) => {
         const { name, value } = e.target;
         setSignUp({ ...signUp, [name]: value });
-        console.log(signUp);
+        // console.log(signUp);
     }
 
     const validateLoginForm = () => {
+        console.log(ip);
+        
         let isValid = true;
         let errors = { isEmailEmpty: "", isPasswordEmpty: "", isEmailValid: "", };
         if (login.email.trim() === "" || login.password.trim() === "") {
@@ -64,7 +66,7 @@ export function UseAuthProvider({ children }) {
 
     const validateSignupForm = () => {
         let isValid = true;
-        let errors = { isEmailEmpty: "", isPasswordEmpty: "", isEmailValid: "", };
+        let errors = { isUsernameEmpty: "", isEmailEmpty: "", isPasswordEmpty: "", isEmailValid: "", };
         if (signUp.email.trim() === "" || signUp.password.trim() === "") {
             isValid = false;
             if (signUp.email.trim() === "")
@@ -86,27 +88,30 @@ export function UseAuthProvider({ children }) {
         e.preventDefault();
         toast.remove();
         setLoading(true);
-        console.log({...login,os,browser,ip});
+        // console.log({...login,os,browser,ip});
         if (validateLoginForm()) {
-            await AuthService.Login({...login,os,browser,ip}).then(async (response) => {
+            await AuthService.Login({ ...login, os, browser, ip }).then((response) => {
                 const data = response.data;
                 setLoginDataInLocalStorageAndHeader(data);
-                console.log(data);
+                // console.log(data);
                 setLoginStatus("success");
                 setUserDetails();
                 if (data.role === 'ADMIN') {
                     setTimeout(() => {
                         setLoading(false);
-                        navigate("/");
+                        navigate("/admin");
                         setTimeout(() => {
                             SuccessToast("Login successful!");
                         }, 200);
                     }, 1500);
                 }
-                else if (data.role === 'USER') {
+                else if (data.role === 'STUDENT') {
                     setTimeout(() => {
                         setLoading(false);
-                        navigate("/");
+                        navigate("/student");
+                        setTimeout(() => {
+                            SuccessToast("Login successful!");
+                        }, 200);
                     }, 1500);
                 }
             }).catch((e) => {
@@ -152,7 +157,7 @@ export function UseAuthProvider({ children }) {
             await AuthService.SignUp(signUp).then(async (response) => {
                 const data = response.data;
                 setSignUpStatus("success");
-                await AuthService.Login({ email: signUp.email, password: signUp.password,browser,os,ip }).then((response) => {
+                await AuthService.Login({ email: signUp.email, password: signUp.password, browser, os, ip }).then((response) => {
                     const data = response.data;
                     setLoginDataInLocalStorageAndHeader(data);
                 }).catch((e) => {
@@ -160,12 +165,12 @@ export function UseAuthProvider({ children }) {
                 });
             }).catch((e) => {
                 const error = e.response.data;
-                console.log(error);
+                // console.log(error);
                 setSignUpStatus(error);
             });
         }
     }
-   
+
 
     const setLoginDataInLocalStorageAndHeader = (data) => {
         localStorage.setItem('token', data.token);
@@ -177,13 +182,19 @@ export function UseAuthProvider({ children }) {
                 return config;
             })
         }
+        if (data.role === 'STUDENT') {
+            userApi.interceptors.request.use((config) => {
+                config.headers.Authorization = "Bearer " + data.token;
+                return config;
+            })
+        }
     }
 
 
     const clear = () => {
         setLogin({ email: "", password: "" });
         setLoginStatus("");
-        setSignUp({ email: "", password: "", confirmPassword: "" });
+        setSignUp({ username: "", email: "", password: "", confirmPassword: "" });
         setSignUpStatus("");
         setLoginFormError({});
         setSignUpFormError({});
@@ -191,7 +202,7 @@ export function UseAuthProvider({ children }) {
 
 
     useEffect(() => {
-        const setUserInfo = async() =>{
+        const setUserInfo = async () => {
             setBrowser(getBrowserInfo());
             setOs(getOSInfo());
             setIp(await getIPAddress())
