@@ -16,6 +16,7 @@ const UseAuthContext = createContext();
 export function UseAuthProvider({ children }) {
     const { setUserDetails } = useUserDetailsStates();
     const navigate = useNavigate();
+    getIPAddress();
 
     const [browser, setBrowser] = useState("");
     const [os, setOs] = useState("");
@@ -205,8 +206,9 @@ export function UseAuthProvider({ children }) {
         const setUserInfo = async () => {
             setBrowser(getBrowserInfo());
             setOs(getOSInfo());
-            setIp(await getIPAddress())
+            setIp(getIPAddress())
         }
+        getIPAddress();
         setUserInfo();
     }, []);
 

@@ -2,6 +2,7 @@
 
 export const getBrowserInfo = () => {
     const userAgent = navigator.userAgent;
+    
     let browser = 'Unknown';
     if (userAgent.match(/edg/i)) {
         browser = "MicroSoft Edge";
@@ -32,12 +33,13 @@ export const getOSInfo = () => {
     return OSName;
 };
 
-export const getIPAddress = async () => {
+export const getIPAddress =() => {
     const { hostname } = window.location;
+    console.log(window.location);
     const ipRegex = /\d+\.\d+\.\d+\.\d+/;
     const match = ipRegex.exec(hostname);
     return match ? match[0] : 'localhost';
-    // console.log(hostname);
+    console.log(hostname);
     // try {
     //     const response = await axios.get('https://api.ipify.org?format=json');
     //     return response.data.ip;
