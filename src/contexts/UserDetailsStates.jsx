@@ -6,7 +6,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import AdminService from "../services/AdminService";
 import { ErrorToast, SuccessToast } from "../components/Toast";
 import toast from "react-hot-toast";
-import { adminApi, userApi } from "../apis/axios";
+import { adminApi, testApi, userApi } from "../apis/axios";
 import { useNavigate } from "react-router-dom";
 import StudentService from "../services/StudentService";
 
@@ -23,6 +23,7 @@ export function UseUserDetailsProvider({ children }) {
                 localStorage.clear();
                 adminApi.interceptors.request.clear();
                 userApi.interceptors.request.clear();
+                testApi.interceptors.request.clear();
                 navigate("/login");
                 toast.remove();
             }, 1000);

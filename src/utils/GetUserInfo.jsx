@@ -1,5 +1,7 @@
 // import axios from "axios";
 
+import axios from "axios";
+
 export const getBrowserInfo = () => {
     const userAgent = navigator.userAgent;
     
@@ -33,17 +35,16 @@ export const getOSInfo = () => {
     return OSName;
 };
 
-export const getIPAddress =() => {
-    const { hostname } = window.location;
-    console.log(window.location);
-    const ipRegex = /\d+\.\d+\.\d+\.\d+/;
-    const match = ipRegex.exec(hostname);
-    return match ? match[0] : 'localhost';
-    console.log(hostname);
-    // try {
-    //     const response = await axios.get('https://api.ipify.org?format=json');
-    //     return response.data.ip;
-    // } catch (error) {
-    //     return 'Unknown';
-    // }
+export const getIPAddress = async () => {
+    // const { hostname } = window.location;
+    // const ipRegex = /\d+\.\d+\.\d+\.\d+/;
+    // const match = ipRegex.exec(hostname);
+    // return match ? match[0] : 'localhost';
+    // await axios.get('https://api.ipify.org?format=json').then((res)=>{
+    //     const ip = res.data.ip;
+    //     return ip;
+    // }).catch((e)=>{
+    //     return "Un Known";
+    // });
+    return axios.get('https://api.ipify.org?format=json');
 };

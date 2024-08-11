@@ -5,18 +5,18 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import AuthService from '../services/AuthService'
 import { useNavigate } from 'react-router-dom'
-import { adminApi, userApi } from "../apis/axios";
+import { adminApi, testApi, userApi } from "../apis/axios";
 import { toast } from 'react-hot-toast'
 import { ErrorToast, SuccessToast } from "../components/Toast";
 import { useUserDetailsStates } from "./UserDetailsStates";
 import { getBrowserInfo, getIPAddress, getOSInfo } from "../utils/GetUserInfo";
+import axios from "axios";
 
 const UseAuthContext = createContext();
 
 export function UseAuthProvider({ children }) {
     const { setUserDetails } = useUserDetailsStates();
     const navigate = useNavigate();
-    getIPAddress();
 
     const [browser, setBrowser] = useState("");
     const [os, setOs] = useState("");
@@ -42,12 +42,9 @@ export function UseAuthProvider({ children }) {
     const handleSignUpFormChange = (e) => {
         const { name, value } = e.target;
         setSignUp({ ...signUp, [name]: value });
-        // console.log(signUp);
     }
 
     const validateLoginForm = () => {
-        console.log(ip);
-        
         let isValid = true;
         let errors = { isEmailEmpty: "", isPasswordEmpty: "", isEmailValid: "", };
         if (login.email.trim() === "" || login.password.trim() === "") {
@@ -89,12 +86,10 @@ export function UseAuthProvider({ children }) {
         e.preventDefault();
         toast.remove();
         setLoading(true);
-        // console.log({...login,os,browser,ip});
         if (validateLoginForm()) {
             await AuthService.Login({ ...login, os, browser, ip }).then((response) => {
                 const data = response.data;
                 setLoginDataInLocalStorageAndHeader(data);
-                // console.log(data);
                 setLoginStatus("success");
                 setUserDetails();
                 if (data.role === 'ADMIN') {
@@ -134,7 +129,7 @@ export function UseAuthProvider({ children }) {
     }
 
     const handleLogOut = async () => {
-        ErrorToast("Log Out... Initialized");
+        // ErrorToast("Log Out... Initialized");
         await AuthService.LogOut().then((response) => {
             toast.remove();
             setTimeout(() => {
@@ -142,6 +137,8 @@ export function UseAuthProvider({ children }) {
                 setTimeout(() => {
                     localStorage.clear();
                     adminApi.interceptors.request.clear();
+                    userApi.interceptors.request.clear();
+                    testApi.interceptors.request.clear();
                     navigate("/login");
                     toast.remove();
                 }, 1000);
@@ -154,6 +151,7 @@ export function UseAuthProvider({ children }) {
 
     const handleSignUp = async (e) => {
         e.preventDefault();
+        setLoading(true);
         if (validateSignupForm()) {
             await AuthService.SignUp(signUp).then(async (response) => {
                 const data = response.data;
@@ -161,13 +159,21 @@ export function UseAuthProvider({ children }) {
                 await AuthService.Login({ email: signUp.email, password: signUp.password, browser, os, ip }).then((response) => {
                     const data = response.data;
                     setLoginDataInLocalStorageAndHeader(data);
+                    setTimeout(() => {
+                        setLoading(false);
+                        navigate(data.role==='ADMIN' ? "/admin" : "/student");
+                        setTimeout(() => {
+                            SuccessToast("SignUp successful!");
+                        }, 200);
+                    }, 1500);
                 }).catch((e) => {
                     const error = e.response.data;
+                    setLoading(false);
                 });
             }).catch((e) => {
                 const error = e.response.data;
-                // console.log(error);
                 setSignUpStatus(error);
+                setLoading(false);
             });
         }
     }
@@ -177,6 +183,10 @@ export function UseAuthProvider({ children }) {
         localStorage.setItem('token', data.token);
         localStorage.setItem('uid', data.uid);
         localStorage.setItem('role', data.role);
+        testApi.interceptors.request.use((config) => {
+            config.headers.Authorization = "Bearer " + data.token;
+            return config;
+        })
         if (data.role === 'ADMIN') {
             adminApi.interceptors.request.use((config) => {
                 config.headers.Authorization = "Bearer " + data.token;
@@ -206,9 +216,8 @@ export function UseAuthProvider({ children }) {
         const setUserInfo = async () => {
             setBrowser(getBrowserInfo());
             setOs(getOSInfo());
-            setIp(getIPAddress())
+            setIp((await getIPAddress()).data.ip || "Unknown")
         }
-        getIPAddress();
         setUserInfo();
     }, []);
 

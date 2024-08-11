@@ -4,7 +4,7 @@ import { Toaster } from "react-hot-toast"
 import { Outlet } from "react-router-dom"
 import AdminNavbar from '../components/admin/AdminNavbar'
 import { useEffect } from "react"
-import { adminApi } from "../apis/axios"
+import { adminApi, testApi } from "../apis/axios"
 import { useUserDetailsStates } from "../contexts/UserDetailsStates"
 import AdminService from "../services/AdminService"
 const AdminLayout = () => {
@@ -18,6 +18,10 @@ const AdminLayout = () => {
             }
             else {
                 adminApi.interceptors.request.use((config) => {
+                    config.headers.Authorization = "Bearer " + localStorage.getItem('token');
+                    return config;
+                })
+                testApi.interceptors.request.use((config) => {
                     config.headers.Authorization = "Bearer " + localStorage.getItem('token');
                     return config;
                 })

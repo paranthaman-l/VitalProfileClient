@@ -2,9 +2,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { Toaster } from "react-hot-toast"
 import { Outlet, useNavigate } from "react-router-dom"
-import AdminNavbar from '../components/admin/AdminNavbar'
 import { useEffect } from "react"
-import { userApi } from "../apis/axios"
+import { testApi, userApi } from "../apis/axios"
 import { useUserDetailsStates } from "../contexts/UserDetailsStates"
 import StudentService from "../services/StudentService"
 import StudentNavbar from "../components/student/StudentNavbar"
@@ -20,6 +19,10 @@ const StudentLayout = () => {
             }
             else {
                 userApi.interceptors.request.use((config) => {
+                    config.headers.Authorization = "Bearer " + localStorage.getItem('token');
+                    return config;
+                })
+                testApi.interceptors.request.use((config) => {
                     config.headers.Authorization = "Bearer " + localStorage.getItem('token');
                     return config;
                 })

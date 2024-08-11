@@ -8,6 +8,9 @@ import { States } from './contexts/States'
 import AuthLayout from './layouts/AuthLayout'
 import AdminLayout from './layouts/AdminLayout'
 import StudentLayout from './layouts/StudentLayout'
+import TestLayout from './layouts/TestLayout'
+import Tests from './pages/student/Tests'
+import Test from './pages/student/Test'
 function App() {
 
   return (
@@ -22,6 +25,10 @@ function App() {
             </Route>
             <Route path='/student' element={<StudentLayout />}>
               <Route index element={<Home />} />
+              <Route path='tests' element={<Tests />} />
+            </Route>
+            <Route path='/test' element={<TestLayout />}>
+              <Route path=':tid' element={<Test />} />
             </Route>
             <Route element={<AuthLayout />}>
               <Route path='/login' element={<Login />} />

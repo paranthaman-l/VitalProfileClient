@@ -19,6 +19,12 @@ const adminApi = axios.create({
 const userApi = axios.create({
     baseURL: import.meta.env.VITE_APP_AXIOS_STUDENT_BASE_URL
 })
+const testApi = axios.create({
+    baseURL: import.meta.env.VITE_APP_AXIOS_TEST_BASE_URL
+})
+const questionApi = axios.create({
+    baseURL: import.meta.env.VITE_APP_AXIOS_QUESTION_BASE_URL
+})
 
 const fileUploadApi = axios.create({
     baseURL: import.meta.env.VITE_APP_AXIOS_FILEUPLOAD_BASE_URL
@@ -26,4 +32,4 @@ const fileUploadApi = axios.create({
 
 
 
-export { api, adminApi, authApi, mailApi,userApi,fileUploadApi }
+export { api, adminApi, authApi, mailApi, userApi, fileUploadApi, testApi,questionApi }
